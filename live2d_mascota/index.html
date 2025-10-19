@@ -37,7 +37,7 @@
       width: 100% !important;
       height: 100% !important;
       display: block;
-      
+
       /* 🎨 Canvas transparente 🎨 */
       background: transparent !important;
       
@@ -56,6 +56,12 @@
     * {
       scrollbar-width: none;
     }
+
+    /* Oculta cualquier imagen de fondo predefinida */
+    img[src*="back_class_normal"] {
+      display: none !important;
+      visibility: hidden !important;
+    }
   </style>
   
   <!-- Live2D Core -->
@@ -70,16 +76,22 @@
       console.log('✅ Live2D cargado');
       
       // Fondo body
-      document.body.style.background = 'transparent';
-      document.documentElement.style.background = 'transparent';
-      
+      const transparentStyles = {
+        background: 'transparent',
+        backgroundColor: 'transparent',
+        backgroundImage: 'none'
+      };
+
+      Object.assign(document.body.style, transparentStyles);
+      Object.assign(document.documentElement.style, transparentStyles);
+
       // Encontrar canvas y forzar transparencia
       setTimeout(() => {
         const canvas = document.querySelector('canvas');
         if (canvas) {
           canvas.style.background = 'transparent';
           console.log('✅ Canvas encontrado y transparentado');
-          
+
           // Forzar clearColor en WebGL
           const gl = canvas.getContext('webgl2') || canvas.getContext('webgl');
           if (gl) {
@@ -87,6 +99,28 @@
             console.log('✅ WebGL configurado con alpha=0');
           }
         }
+
+        const removeBackgroundAssets = () => {
+          document
+            .querySelectorAll('img[src*="back_class_normal"], [style*="back_class_normal"]')
+            .forEach((element) => {
+              element.style.display = 'none';
+              element.style.visibility = 'hidden';
+            });
+        };
+
+        removeBackgroundAssets();
+
+        const observer = new MutationObserver(() => {
+          removeBackgroundAssets();
+        });
+
+        observer.observe(document.body, {
+          childList: true,
+          subtree: true,
+          attributes: true,
+          attributeFilter: ['style', 'class', 'src']
+        });
       }, 100);
     });
   </script>
