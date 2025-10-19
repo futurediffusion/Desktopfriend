@@ -3,37 +3,50 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>TypeScript HTML App</title>
+  <title>Live2D Desktop Friend</title>
   <style>
-    html, body {
+    * {
       margin: 0;
       padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100vw;
+      height: 100vh;
       overflow: hidden;
+      /* FONDO TRANSPARENTE */
       background: transparent !important;
-      overscroll-behavior-x: none;
+      /* Evita scroll accidental */
+      overscroll-behavior: none;
       touch-action: none;
     }
-    body {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      align-items: center;
-    }
+
     canvas {
-      width: 100vw !important;
-      height: 100vh !important;
+      width: 100% !important;
+      height: 100% !important;
       display: block;
       background: transparent !important;
     }
+
+    /* Oculta scrollbars */
     ::-webkit-scrollbar {
       display: none;
     }
+
+    /* Cursor personalizado (opcional) */
+    body {
+      cursor: default;
+    }
   </style>
-  <!-- Live2DCubismCore script -->
+  
+  <!-- Live2D Core -->
   <script src="Core/live2dcubismcore.js"></script>
-  <!-- Build script -->
+  
+  <!-- Tu código Live2D compilado -->
   <script type="module" crossorigin src="assets/index-DAhHvHok.js"></script>
 </head>
 <body>
+  <!-- El canvas se crea automáticamente por demo.js -->
 </body>
 </html>

@@ -1,56 +1,57 @@
 @echo off
-echo =====================================
-echo  🐍 Configurando entorno Mascota Live2D
-echo =====================================
+chcp 65001 >nul
+title 🛠️ Configuración Live2D Desktop Friend
+color 0B
 
-REM Crea el entorno virtual
-python -m venv venv
+echo.
+echo ====================================
+echo   🐍 Configurando entorno
+echo ====================================
+echo.
 
-REM Activa el entorno
+REM === Verificar Python ===
+python --version >nul 2>&1
+if errorlevel 1 (
+  echo [❌] Python no encontrado. Instálalo primero:
+  echo     https://www.python.org/downloads/
+  pause & exit /b 1
+)
+
+REM === Crear entorno virtual si no existe ===
+if not exist "venv\" (
+  echo [✓] Creando entorno virtual...
+  python -m venv venv
+) else (
+  echo [✓] Entorno virtual ya existe
+)
+
+REM === Activar entorno ===
 call venv\Scripts\activate
 
-REM Instala PySide6
-pip install PySide6
+REM === Instalar PySide6 ===
+echo [✓] Instalando PySide6...
+pip install --quiet PySide6
 
-REM Crea la carpeta del proyecto
-mkdir live2d_mascota
+REM === Verificar estructura ===
+if not exist "live2d_mascota\" (
+  echo [❌] Falta carpeta: live2d_mascota
+  pause & exit /b 1
+)
 
-REM Crea main.py
-echo from PySide6.QtCore import QUrl> live2d_mascota\main.py
-echo from PySide6.QtWidgets import QApplication>> live2d_mascota\main.py
-echo from PySide6.QtWebEngineWidgets import QWebEngineView>> live2d_mascota\main.py
-echo import sys>> live2d_mascota\main.py
-echo.>> live2d_mascota\main.py
-echo app = QApplication(sys.argv)>> live2d_mascota\main.py
-echo.>> live2d_mascota\main.py
-echo view = QWebEngineView()>> live2d_mascota\main.py
-echo view.setWindowTitle("Mascota Live2D")>> live2d_mascota\main.py
-echo view.load(QUrl.fromLocalFile("index.html"))  ^# carga el HTML local>> live2d_mascota\main.py
-echo view.setFixedSize(400, 400)  ^# tamaño base>> live2d_mascota\main.py
-echo view.show()>> live2d_mascota\main.py
-echo.>> live2d_mascota\main.py
-echo sys.exit(app.exec())>> live2d_mascota\main.py
+if not exist "web\index.html" (
+  echo [❌] Falta carpeta: web (con tus modelos Live2D)
+  echo.
+  echo ➡️  Descarga los modelos de:
+  echo     https://www.live2d.com/en/download/sample-data/
+  pause & exit /b 1
+)
 
-REM Crea index.html
-(
-echo ^<!DOCTYPE html^>
-echo ^<html lang="es"^>
-echo ^<head^>
-echo     ^<meta charset="UTF-8" /^>
-echo     ^<title>Mascota^</title^>
-echo ^</head^>
-echo ^<body style="background: #222; color: white; display:flex; align-items:center; justify-content:center;"^>
-echo     ^<h2^>Hola, soy tu futura mascota 😄^</h2^>
-echo ^</body^>
-echo ^</html^>
-) > live2d_mascota\index.html
-
-echo =====================================
-echo ✅ Proyecto creado correctamente
-echo Para ejecutarlo:
-echo 1. call venv\Scripts\activate
-echo 2. cd live2d_mascota
-echo 3. python main.py
-echo =====================================
-
+echo.
+echo ====================================
+echo   ✅ Configuración completa
+echo ====================================
+echo.
+echo 📝 Ahora ejecuta:
+echo     serve_and_run.bat
+echo.
 pause
