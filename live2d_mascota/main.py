@@ -39,6 +39,9 @@ class TransparentLive2DWidget(QWebEngineView):
         """Permite arrastrar la ventana"""
         self.dragging = False
         self.offset = QPoint()
+        # Asegura que recibimos eventos de movimiento incluso si el contenido web
+        # está capturando el puntero.
+        self.setMouseTracking(True)
     
     def loadLive2D(self):
         """Carga el servidor Live2D"""
@@ -49,24 +52,21 @@ class TransparentLive2DWidget(QWebEngineView):
     # ===== ARRASTRE DE VENTANA =====
     def mousePressEvent(self, event):
         if event.button() == Qt.MouseButton.LeftButton:
-            window_handle = self.windowHandle()
-            # Usa la API nativa de Qt para arrastrar ventanas sin bordes si está disponible
-            if window_handle and window_handle.startSystemMove():
-                event.accept()
-                return
-
             self.dragging = True
             self.offset = event.globalPosition().toPoint() - self.pos()
+            event.accept()
         super().mousePressEvent(event)
-    
+
     def mouseMoveEvent(self, event):
-        if self.dragging:
+        if self.dragging and event.buttons() & Qt.MouseButton.LeftButton:
             self.move(event.globalPosition().toPoint() - self.offset)
+            event.accept()
         super().mouseMoveEvent(event)
 
     def mouseReleaseEvent(self, event):
         if event.button() == Qt.MouseButton.LeftButton:
             self.dragging = False
+            event.accept()
         super().mouseReleaseEvent(event)
 
 
