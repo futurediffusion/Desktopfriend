@@ -106,7 +106,15 @@ class TransparentLive2DWidget(QWebEngineView):
         
         # Fondo transparente
         self.setAttribute(Qt.WidgetAttribute.WA_TranslucentBackground)
-        
+        self.setAttribute(Qt.WidgetAttribute.WA_NoSystemBackground)
+        self.setAttribute(Qt.WidgetAttribute.WA_OpaquePaintEvent, False)
+        self.setAutoFillBackground(False)
+        if self.viewport() is not None:
+            self.viewport().setAttribute(Qt.WidgetAttribute.WA_TranslucentBackground)
+            self.viewport().setAutoFillBackground(False)
+            self.viewport().setStyleSheet("background: transparent;")
+        self.setStyleSheet("background: transparent;")
+
         # Página transparente
         self.page().setBackgroundColor(QColor(0, 0, 0, 0))
         
