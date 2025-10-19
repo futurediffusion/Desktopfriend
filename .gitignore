@@ -1,0 +1,24 @@
+# Ignorar entorno virtual
+venv/
+.env/
+__pycache__/
+*.pyc
+*.pyo
+
+# Archivos de sistema
+.DS_Store
+Thumbs.db
+
+# IDEs
+.vscode/
+.idea/
+
+# Archivos grandes o temporales
+*.log
+*.tmp
+/build/
+/dist/
+venv/
+__pycache__/
+*.pyc
+.env
