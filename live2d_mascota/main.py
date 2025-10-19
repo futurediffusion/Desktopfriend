@@ -49,16 +49,25 @@ class TransparentLive2DWidget(QWebEngineView):
     # ===== ARRASTRE DE VENTANA =====
     def mousePressEvent(self, event):
         if event.button() == Qt.MouseButton.LeftButton:
+            window_handle = self.windowHandle()
+            # Usa la API nativa de Qt para arrastrar ventanas sin bordes si está disponible
+            if window_handle and window_handle.startSystemMove():
+                event.accept()
+                return
+
             self.dragging = True
             self.offset = event.globalPosition().toPoint() - self.pos()
+        super().mousePressEvent(event)
     
     def mouseMoveEvent(self, event):
         if self.dragging:
             self.move(event.globalPosition().toPoint() - self.offset)
-    
+        super().mouseMoveEvent(event)
+
     def mouseReleaseEvent(self, event):
         if event.button() == Qt.MouseButton.LeftButton:
             self.dragging = False
+        super().mouseReleaseEvent(event)
 
 
 def main():
