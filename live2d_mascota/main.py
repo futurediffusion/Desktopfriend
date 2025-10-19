@@ -38,7 +38,10 @@ class TransparentLive2DWidget(QWebEngineView):
     def setupDragging(self):
         """Permite arrastrar la ventana"""
         self.dragging = False
+        self.drag_candidate = False
+        self.system_moving = False
         self.offset = QPoint()
+        self.press_pos = QPoint()
         # Asegura que recibimos eventos de movimiento incluso si el contenido web
         # está capturando el puntero.
         self.setMouseTracking(True)
@@ -52,21 +55,48 @@ class TransparentLive2DWidget(QWebEngineView):
     # ===== ARRASTRE DE VENTANA =====
     def mousePressEvent(self, event):
         if event.button() == Qt.MouseButton.LeftButton:
-            self.dragging = True
-            self.offset = event.globalPosition().toPoint() - self.pos()
-            event.accept()
+            self.drag_candidate = True
+            self.press_pos = event.globalPosition().toPoint()
+            self.system_moving = False
+
         super().mousePressEvent(event)
 
     def mouseMoveEvent(self, event):
-        if self.dragging and event.buttons() & Qt.MouseButton.LeftButton:
-            self.move(event.globalPosition().toPoint() - self.offset)
-            event.accept()
+        if event.buttons() & Qt.MouseButton.LeftButton:
+            if self.drag_candidate and not self.dragging:
+                # Inicia el arrastre cuando la distancia es perceptible.
+                if (event.globalPosition().toPoint() - self.press_pos).manhattanLength() >= 6:
+                    window = self.windowHandle()
+                    if window is not None and window.startSystemMove():
+                        self.system_moving = True
+                        self.drag_candidate = False
+                        event.accept()
+                        return
+
+                    # Fallback manual si el movimiento nativo no existe.
+                    self.dragging = True
+                    self.drag_candidate = False
+                    self.offset = self.press_pos - self.pos()
+                    self.grabMouse()
+
+            if self.dragging:
+                self.move(event.globalPosition().toPoint() - self.offset)
+                event.accept()
+                return
+
         super().mouseMoveEvent(event)
 
     def mouseReleaseEvent(self, event):
         if event.button() == Qt.MouseButton.LeftButton:
+            was_dragging = self.dragging or self.system_moving
             self.dragging = False
-            event.accept()
+            self.drag_candidate = False
+            self.system_moving = False
+            if self.mouseGrabber() == self:
+                self.releaseMouse()
+            if was_dragging:
+                event.accept()
+
         super().mouseReleaseEvent(event)
 
 
